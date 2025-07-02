@@ -1,7 +1,7 @@
 <br>
 <p align="center">
-<a href="https://sli.dev" target="_blank">
-<img src="https://sli.dev/logo-title.png" alt="Slidev" height="250" width="250"/>
+<a href="https://github.com/Soyo-Wind/Argon" target="_blank">
+<img src="./logo.png" alt="Slidev" height="250" width="250"/>
 </a>
 </p>
 

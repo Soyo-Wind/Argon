@@ -27,12 +27,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "型/型マーク.md",
+                "file": "README.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "型マーク"
+              "title": "README"
             }
           },
           {
@@ -227,8 +227,10 @@
       "command-palette:コマンドパレットを開く": false
     }
   },
-  "active": "f3b9961abdacbe82",
+  "active": "158500bb47bb80c0",
   "lastOpenFiles": [
+    "img/未確認 36711.crdownload",
+    "README.md",
     "型/型マーク.md",
     "型/数値型/数値型.md",
     "演算子/等値演算子.md",
@@ -257,7 +259,6 @@
     "変数定義.md",
     "関数定義.md",
     "関数.md",
-    "値.md",
-    "Welcome.md"
+    "値.md"
   ]
 }

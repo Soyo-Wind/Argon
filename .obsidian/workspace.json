@@ -4,77 +4,35 @@
     "type": "split",
     "children": [
       {
-        "id": "a14e5eadb8816b73",
+        "id": "80a26d4179937422",
         "type": "tabs",
         "children": [
           {
-            "id": "120d6b42673b883e",
+            "id": "1a4ee21d24312137",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "演算子/算術演算子.md",
+                "file": "演算子/比較演算子.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "算術演算子"
+              "title": "比較演算子"
             }
           },
           {
-            "id": "196bf78efc01d891",
+            "id": "f4cf393cd3d158b5",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "標準関数.md",
+                "file": "README.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "標準関数"
-            }
-          },
-          {
-            "id": "2bbc8e9c2759215d",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "変数定義.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "変数定義"
-            }
-          },
-          {
-            "id": "58992b92cceae50c",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "型/型マーク.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "型マーク"
-            }
-          },
-          {
-            "id": "4491df8fa8547cd5",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "関数.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "関数"
+              "title": "README"
             }
           }
         ],
@@ -241,40 +199,40 @@
       "command-palette:コマンドパレットを開く": false
     }
   },
-  "active": "196bf78efc01d891",
+  "active": "f4cf393cd3d158b5",
   "lastOpenFiles": [
-    "変数定義.md",
-    "関数.md",
-    "標準関数.md",
-    "型/型マーク.md",
-    "関数定義.md",
-    "値.md",
+    "演算子/比較演算子.md",
+    "img/progress.png",
+    "img/progress.png",
+    "README.md",
     "演算子/算術演算子.md",
-    "式・演算子.md",
+    "型/str.md",
+    "標準関数.md",
+    "演算子/等値演算子.md",
+    "エスケープシーケンス.md",
+    "変数定義.md",
     "演算子/ブール論理演算子.md",
+    "型/型マーク.md",
+    "関数.md",
     "型/char.md",
     "型/bool.md",
     "型/数値型/浮動小数点型.md",
     "型/数値型/整数数値型.md",
-    "型/str.md",
     "型/数値型/bigint.md",
-    "README.md",
-    "img/progress.png",
+    "値.md",
+    "関数定義.md",
+    "式・演算子.md",
     "型/数値型/整数型/byte.md",
     "型/数値型/整数型/long.md",
     "型/数値型/整数型/int.md",
     "型/数値型/浮動小数点型/double.md",
     "型/数値型/浮動小数点型/decimal.md",
-    "演算子/比較演算子.md",
     "img/未確認 36711.crdownload",
-    "演算子/等値演算子.md",
     "型/数値型/浮動小数点型/float.md",
-    "整数型.md",
     "型/数値型/浮動小数点型",
     "型/数値型/整数型",
     "型/数値型",
     "演算子",
-    "型",
-    "文法.md"
+    "型"
   ]
 }

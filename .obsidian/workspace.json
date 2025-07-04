@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "型/char.md",
+                "file": "README.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "char"
+              "title": "README"
             }
           }
         ]
@@ -186,8 +186,8 @@
   },
   "active": "1a4ee21d24312137",
   "lastOpenFiles": [
-    "型/str.md",
     "型/char.md",
+    "型/str.md",
     "演算子/比較演算子.md",
     "README.md",
     "img/progress.png",

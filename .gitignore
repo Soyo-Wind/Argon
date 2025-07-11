@@ -9,6 +9,8 @@
 .obsidian/plugins/obsidian-git/data.json
 .obsidian/appearance.json
 .obsidian/app.json
+.obsidian/graph.json
+.obsidian/themes/*
 
 # exclude business notes
 notact_*/

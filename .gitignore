@@ -13,7 +13,7 @@
 .obsidian/themes/*
 
 # exclude business notes
-notact_*/
+notact/
 
 # Add below lines to exclude OS settings and caches
 .trash/

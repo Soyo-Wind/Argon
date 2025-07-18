@@ -21,6 +21,7 @@ internal class Num : Expression
 
 internal class Char : Expression
 {
+    public char Value;
     public Char(char value) : base(value)
     {
     }
@@ -28,6 +29,7 @@ internal class Char : Expression
 
 internal class Bool : Expression
 {
+    public bool Value;
     public Bool(bool value) : base(value)
     {
     }
@@ -55,9 +57,7 @@ internal class Biter
 
 internal class Floater : Expression
 {
-    public Floater(object value) : base(value)
-    {
-    }
+    public Floater(object value) : base(value){}
 }
 
 internal class Changer
@@ -72,16 +72,16 @@ internal class Changer
 
 public enum VarType
 {
-    Bool,
-    Byte,
-    Int,
-    Long,
-    Bigint,
-    Float,
-    Double,
-    Decimal,
-    Char,
-    Str
+    Bool = '⨀',
+    Byte = '⊀',
+    Int = '∈',
+    Long = '∋',
+    Bigint = '∝',
+    Float = 'ʕ',
+    Double = 'ð',
+    Decimal = 'ʖ',
+    Char = '⨝',
+    Str = '⫗'
 }
 
 internal class ADD
@@ -141,6 +141,8 @@ internal class MUL
             VarType.Float => (float)left * (float)right,
             VarType.Double => (double)left * (double)right,
             VarType.Decimal => (decimal)left * (decimal)right,
+            VarType.Char => Tools.mults((string)left,(long)right),
+            VarType.Str => Tools.mults((string)left , (long)right),
             _ => throw new InvalidOperationException("Unsupported VarType for multiplication")
         };
     }

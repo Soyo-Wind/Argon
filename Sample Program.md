@@ -27,7 +27,7 @@
 ```
 ▻Fibonacci.main;
 
-⨋for≪◈∈i=∈0;,∈i<∈31,⨋stut≪∈Fibonacci≪∈i++≫≫;≫;
+⨋for≪◈∈i=∈0;,∈i<∈31,⨋stut≪∈⨊Fibonacci≪∈i++≫≫;≫;
 
 ◈⨊∈Fibonacci≪∈n≫⩿
 	⨋retn≪n<2?n:F(n-1)+F(n-2)≫;

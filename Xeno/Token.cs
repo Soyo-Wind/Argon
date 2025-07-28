@@ -18,9 +18,11 @@ internal enum TokenType
     Header,
     DECPrefix,
     Identifier,
-    IntLiteral,
+    IntegerLiteral,
     StringLiteral,
     Symbol,
     Comment,
-    Unknown
+    Unknown,
+    Operator,
+    Whitespace
 }

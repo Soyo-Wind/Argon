@@ -27,5 +27,6 @@ internal enum LexTokenType
     Mark, // Added for literal prefixes
     FunctionCall, // Function calls treated as identifiers
     Stringer, // For string/Char literals
-    Coron // For semicolon and other specific symbols
+    Coron, // For semicolon and other specific symbols
+    Unknown
 }

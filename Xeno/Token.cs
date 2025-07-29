@@ -18,11 +18,11 @@ internal enum TokenType
     Header,
     DECPrefix,
     Identifier,
-    IntegerLiteral,
-    StringLiteral,
     Symbol,
     Comment,
     Unknown,
     Operator,
-    Whitespace
+    Whitespace,
+    Mark, // Added for literal prefixes
+    FunctionCall, // Function calls treated as identifiers
 }

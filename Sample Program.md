@@ -30,12 +30,12 @@
 ⨋for≪◈∈i=∈0;,∈i<∈31,⨋stut≪∈⨊Fibonacci≪∈i++≫≫;≫;
 
 ◈⨊∈Fibonacci≪∈n≫⩿
-	⨋retn≪n<2?n:F(n-1)+F(n-2)≫;
+	⨋retn≪∈n<∈2?∈n:∈⨊Fibonacci≪∈n-∈1≫+∈⨊Fibonacci≪∈n-∈2≫≫;
 ⪀
 ```
 
 ### minify
 
 ```
-⨋for≪◈∈i=∈0;,∈i<∈31,⨋stut≪∈⨊F≪∈i++≫≫;≫;◈⨊∈F≪∈n≫⩿⨋retn≪n<2?n:F(n-1)+F(n-2)≫;⪀
+⨋for≪◈∈i=∈0;,∈i<∈31,⨋stut≪∈⨊F≪∈i++≫≫;≫;◈⨊∈F≪∈n≫⩿⨋retn≪∈n<∈2?∈n:∈⨊F≪∈n-∈1≫+∈⨊F≪∈n-∈2≫≫;⪀
 ```

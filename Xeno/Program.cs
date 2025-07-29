@@ -37,24 +37,23 @@ class Owen
             .Replace("\t",""));
             return;
         }
-        string input = @"▻Fibonacci.main;
-
-⨋for≪◈∈i=∈0;,∈i<∈31,⨋stut≪∈⨊Fibonacci≪∈i++≫≫;≫;
-
-◈⨊∈Fibonacci≪∈n≫⩿
-	⨋retn≪n<2?n:F(n-1)+F(n-2)≫;
-⪀
+        string input = @"▻FizzBuzz.main;
+⨋for≪◈∈i = ∈1;, ∈i <= ∈100,
+	⨋stut≪∈i%15⨬⫗ ⩿
+		∈₪ == ∈0 => ""FizzBuzz"",
+		 ∈₪ % ∈3 == ∈0 => ""Fizz"",
+		  ∈₪ % ∈5 == ∈0 => ""Buzz"",
+		   ∈_ => ∈i
+		⪀
+	≫;
+≫;
         ";
 
         // トークン化
         tokens = Lexer.Tokenize(input);
         // 出力
-        Console.WriteLine($"=== トークン一覧({tokens.Count}) ===");
-        foreach (var t in tokens)
-        {
-            Console.WriteLine($"[{t.Type}] : [{t.Value}] at {t.Position}");
-        }
-        Console.WriteLine(input == tokens.Select(t => t.Value).Aggregate((a, b) => a + b) ? "一致" : "不一致");
+        Console.WriteLine($"=== トークンカウント({tokens.Count}) ===");
+        Console.WriteLine(input == tokens.Select(t => t.Value).Aggregate((a, b) => a + b) ? "=== 一致 ===" : "=== 不一致 ===");
         foreach (var t in tokens)
         {
             if (t.Type == TokenType.Unknown)
@@ -65,21 +64,24 @@ class Owen
             // 色分けして出力
             Console.ForegroundColor = t.Type switch
             {
-                TokenType.Header => ConsoleColor.Cyan,
+                TokenType.Header => ConsoleColor.White,
                 TokenType.DECPrefix => ConsoleColor.Magenta,
                 TokenType.Identifier => ConsoleColor.Green,
-                TokenType.IntegerLiteral => ConsoleColor.Yellow,
-                TokenType.StringLiteral => ConsoleColor.Blue,
-                TokenType.Symbol => ConsoleColor.Gray,
-                TokenType.Comment => ConsoleColor.DarkGray,
-                TokenType.Operator => ConsoleColor.DarkYellow,
-                TokenType.Whitespace => ConsoleColor.White, // Whitespace is not colored
+                TokenType.Symbol => ConsoleColor.Blue,
+                TokenType.Comment or TokenType.Whitespace => ConsoleColor.Gray,
+                TokenType.Operator => ConsoleColor.Yellow,
+                TokenType.Mark or TokenType.FunctionCall => ConsoleColor.Cyan,
                 _ => ConsoleColor.Red
             };
             
             if (t.Type == TokenType.Unknown)warns.Add((t.Position, "UnknownToken", $"不明なトークン: {t.Value} at {t.Position}"));
             Console.Write(t.Value);
             Console.ResetColor();
+        }
+
+        if (tokens.FindAll(t => t.Type == TokenType.Header).Count > 1)
+        {
+            warns.Add((0, "MultipleHeaders", "複数のヘッダーが検出されました。"));
         }
 
         if (warns.Count > 0)

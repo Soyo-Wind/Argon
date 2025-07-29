@@ -3,24 +3,25 @@
 
 class Owen
 {
-    internal static readonly string classHeader = "▻",
-                                StringLiteralPrefix = "⫗",
-                                CharLiteralPrefix = "⨝",
-                                IntLitelalPrefix = "∈",
-                                LongLiteralPrefix = "∋",
-                                ByteLiteralPrefix = "⊀",
-                                FloatLiteralPrefix = "ʕ",
-                                DoubleLiteralPrefix = "ð",
-                                BoolLiteralPrefix = "⨀",
-                                DecimalLiteralPrefix = "ʖ",
-                                SwitchPrefix = "⨬",
-                                BlockPrefix = "⩿",
-                                BlockSufffix = "⪀",
-                                SigmaPrefix = "≪",
-                                SigmaSuffix = "≫",
-                                SigPrefix = "⨋",
-                                VerSigPrefix = "⨊",
-                                DECPrefix = "◈";
+    internal static readonly string
+    classHeader = "▻",
+    StringLiteralPrefix = "⫗",
+    CharLiteralPrefix = "⨝",
+    IntLitelalPrefix = "∈",
+    LongLiteralPrefix = "∋",
+    ByteLiteralPrefix = "⊀",
+    FloatLiteralPrefix = "ʕ",
+    DoubleLiteralPrefix = "ð",
+    BoolLiteralPrefix = "⨀",
+    DecimalLiteralPrefix = "ʖ",
+    SwitchPrefix = "⨬",
+    BlockPrefix = "⩿",
+    BlockSufffix = "⪀",
+    SigmaPrefix = "≪",
+    SigmaSuffix = "≫",
+    SigPrefix = "⨋",
+    VerSigPrefix = "⨊",
+    DECPrefix = "◈";
 
     internal static List<(int code, string errortype, string message)> warns = new();
     private static List<LexToken> tokens = new();
@@ -54,15 +55,15 @@ class Owen
             // 色分けして出力
             Console.ForegroundColor = t.Type switch
             {
-                LexTokenType.Header => ConsoleColor.White,
-                LexTokenType.DECPrefix => ConsoleColor.Magenta,
-                LexTokenType.Identifier => ConsoleColor.Gray,
-                LexTokenType.Symbol or LexTokenType.Coron => ConsoleColor.Blue,
-                LexTokenType.Comment or LexTokenType.Whitespace => ConsoleColor.DarkGreen,
-                LexTokenType.Operator => ConsoleColor.Yellow,
-                LexTokenType.Mark or LexTokenType.FunctionCall => ConsoleColor.Cyan,
-                LexTokenType.Stringer => ConsoleColor.DarkRed,
-                _ => ConsoleColor.Black // Unknown or other types
+                LexTokenType.Header                                  => ConsoleColor.White,
+                LexTokenType.DECPrefix                               => ConsoleColor.Magenta,
+                LexTokenType.Identifier                              => ConsoleColor.Gray,
+                LexTokenType.Symbol     or LexTokenType.Coron        => ConsoleColor.Blue,
+                LexTokenType.Comment    or LexTokenType.Whitespace   => ConsoleColor.DarkGreen,
+                LexTokenType.Operator                                => ConsoleColor.Yellow,
+                LexTokenType.Mark       or LexTokenType.FunctionCall => ConsoleColor.Cyan,
+                LexTokenType.Stringer                                => ConsoleColor.DarkRed,
+                _                                                    => ConsoleColor.Black // Unknown or other types
             };
             Console.Write(t.Value);
             Console.ResetColor();

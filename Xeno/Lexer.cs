@@ -17,7 +17,7 @@ internal static class Lexer
         (?<Mark>[{Owen.IntLitelalPrefix}{Owen.LongLiteralPrefix}{Owen.ByteLiteralPrefix}{Owen.StringLiteralPrefix}{Owen.FloatLiteralPrefix}{Owen.DoubleLiteralPrefix}{Owen.BoolLiteralPrefix}{Owen.DecimalLiteralPrefix}])|
         (?<Comment>#.*$)|
         (?<Whitespace>[\s\t\r\n]+))|
-        (?<Identifier>.+?)",
+        (?<Identifier>[a-zA-Z0-9]+)",
         RegexOptions.IgnorePatternWhitespace | RegexOptions.Multiline);
     public static List<LexToken> Tokenize(string code)
     {
@@ -49,33 +49,7 @@ internal static class Lexer
             else if (match.Groups["Coron"].Success)
                 tokens.Add(new LexToken(LexTokenType.Symbol, match.Value, match.Index)); // Semicolon treated as a symbol
         }
-
-        // Identifier連結処理
-        var mergedTokens = new List<LexToken>();
-        int i = 0;
-        while (i < tokens.Count)
-        {
-            if (tokens[i].Type == LexTokenType.Identifier)
-            {
-                int startPos = tokens[i].Position;
-                string mergedValue = tokens[i].Value ?? "";
-                int j = i + 1;
-                while (j < tokens.Count && tokens[j].Type == LexTokenType.Identifier && tokens[j].Position == tokens[j - 1].Position + (tokens[j - 1].Value ?? "").Length)
-                {
-                    mergedValue += tokens[j].Value;
-                    j++;
-                }
-                mergedTokens.Add(new LexToken(LexTokenType.Identifier, mergedValue, startPos));
-                i = j;
-            }
-            else
-            {
-                mergedTokens.Add(tokens[i]);
-                i++;
-            }
-        }
-
-        return mergedTokens;
+        return tokens;
     }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

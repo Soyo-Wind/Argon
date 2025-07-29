@@ -22,23 +22,18 @@ class Owen
                                 VerSigPrefix = "⨊",
                                 DECPrefix = "◈";
 
-    private static List<(int code, string errortype, string message)> warns = new();
-    private static List<Token> tokens = new();
+    internal static List<(int code, string errortype, string message)> warns = new();
+    private static List<LexToken> tokens = new();
 
     static void Main(string[] args)
     {
         if (args.Length == 1)
         {
-            Console.WriteLine(Lexer.tokenRegex.ToString()
-            .Replace("\"", "\"\"")
-            .Replace("\r", "")
-            .Replace("\n", "")
-            .Replace(" ", "")
-            .Replace("\t",""));
+            Console.WriteLine(DelWhite.RemoveWhitespace(Lexer.tokenRegex.ToString()));
             return;
         }
         string input = @"▻FizzBuzz.main;
-⨋for≪◈∈i = ∈1;, ∈i <= ∈100,
+⨋for≪◈∈i = ∈1;, ∈i =< ∈100,
 	⨋stut≪∈i%15⨬⫗ ⩿
 		∈₪ == ∈0 => ""FizzBuzz"",
 		 ∈₪ % ∈3 == ∈0 => ""Fizz"",
@@ -46,50 +41,40 @@ class Owen
 		   ∈_ => ∈i
 		⪀
 	≫;
-≫;
-        ";
+≫;";
 
         // トークン化
         tokens = Lexer.Tokenize(input);
+
         // 出力
         Console.WriteLine($"=== トークンカウント({tokens.Count}) ===");
-        Console.WriteLine(input == tokens.Select(t => t.Value).Aggregate((a, b) => a + b) ? "=== 一致 ===" : "=== 不一致 ===");
         foreach (var t in tokens)
         {
-            if (t.Type == TokenType.Unknown)
-            {
-                warns.Add((t.Position, "UnknownToken", $"不明なトークン: {t.Value} at {t.Position}"));
-            }
 
             // 色分けして出力
             Console.ForegroundColor = t.Type switch
             {
-                TokenType.Header => ConsoleColor.White,
-                TokenType.DECPrefix => ConsoleColor.Magenta,
-                TokenType.Identifier => ConsoleColor.Green,
-                TokenType.Symbol => ConsoleColor.Blue,
-                TokenType.Comment or TokenType.Whitespace => ConsoleColor.Gray,
-                TokenType.Operator => ConsoleColor.Yellow,
-                TokenType.Mark or TokenType.FunctionCall => ConsoleColor.Cyan,
-                _ => ConsoleColor.Red
+                LexTokenType.Header => ConsoleColor.White,
+                LexTokenType.DECPrefix => ConsoleColor.Magenta,
+                LexTokenType.Identifier => ConsoleColor.Gray,
+                LexTokenType.Symbol or LexTokenType.Coron => ConsoleColor.Blue,
+                LexTokenType.Comment or LexTokenType.Whitespace => ConsoleColor.DarkGreen,
+                LexTokenType.Operator => ConsoleColor.Yellow,
+                LexTokenType.Mark or LexTokenType.FunctionCall => ConsoleColor.Cyan,
+                LexTokenType.Stringer => ConsoleColor.DarkRed,
+                _ => ConsoleColor.Black // Unknown or other types
             };
-            
-            if (t.Type == TokenType.Unknown)warns.Add((t.Position, "UnknownToken", $"不明なトークン: {t.Value} at {t.Position}"));
             Console.Write(t.Value);
             Console.ResetColor();
         }
 
-        if (tokens.FindAll(t => t.Type == TokenType.Header).Count > 1)
-        {
-            warns.Add((0, "MultipleHeaders", "複数のヘッダーが検出されました。"));
-        }
-
+        Lexer.LexError(tokens);
         if (warns.Count > 0)
         {
             Console.WriteLine($"=== 警告一覧({warns.Count}) ===");
             foreach (var warn in warns)
             {
-                Console.WriteLine($"[{warn.code}] [{warn.errortype}] : {warn.message}");
+                Console.WriteLine($"[ RG{warn.code} ] [{warn.errortype}] : {warn.message}");
             }
         }
     }

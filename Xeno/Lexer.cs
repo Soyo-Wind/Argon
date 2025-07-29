@@ -1,4 +1,3 @@
-
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 
@@ -11,9 +10,9 @@ internal static class Lexer
         (?<DECPrefix>[{Owen.DECPrefix}§])|
         (?<FunctionCall>[{Owen.SigPrefix}{Owen.VerSigPrefix}])|
         (?<Operator>(\+\+|--|\+|-|<|>|==|=<|>=|!|!=|\*|\/|%|\?|:|∦|⩗|\||\^))|
-        (?<Symbol>=>|[₪,\\{Owen.BlockPrefix}{Owen.BlockSufffix}{Owen.SwitchPrefix}{Owen.SigmaPrefix}{Owen.SigmaSuffix}=_])|
+        (?<Symbol>=>|[₪.(),\\{Owen.BlockPrefix}{Owen.BlockSufffix}{Owen.SwitchPrefix}{Owen.SigmaPrefix}{Owen.SigmaSuffix}=_])|
         (?<Coron>;)|
-        (?<Stringer>"".+?"")|
+        (?<Stringer>"".*?"")|
         (?<Mark>[{Owen.IntLitelalPrefix}{Owen.LongLiteralPrefix}{Owen.ByteLiteralPrefix}{Owen.StringLiteralPrefix}{Owen.FloatLiteralPrefix}{Owen.DoubleLiteralPrefix}{Owen.BoolLiteralPrefix}{Owen.DecimalLiteralPrefix}])|
         (?<Comment>#.*$)|
         (?<Whitespace>[\s\t\r\n]+))|
@@ -26,38 +25,36 @@ internal static class Lexer
 
         foreach (Match match in matches)
         {
-            if (match.Groups["Header"].Success)
-                tokens.Add(new LexToken(LexTokenType.Header, match.Value, match.Index));
-            else if (match.Groups["DECPrefix"].Success)
-                tokens.Add(new LexToken(LexTokenType.DECPrefix, match.Value, match.Index));
-            else if (match.Groups["FunctionCall"].Success)
-                tokens.Add(new LexToken(LexTokenType.FunctionCall, match.Value, match.Index)); // Function calls treated as identifiers
-            else if (match.Groups["Operator"].Success)
-                tokens.Add(new LexToken(LexTokenType.Operator, match.Value, match.Index)); // Whitespace ignored
-            else if (match.Groups["Symbol"].Success)
-                tokens.Add(new LexToken(LexTokenType.Symbol, match.Value, match.Index));
-            else if (match.Groups["Mark"].Success)
-                tokens.Add(new LexToken(LexTokenType.Mark, match.Value, match.Index));
-            else if (match.Groups["Identifier"].Success)
-                tokens.Add(new LexToken(LexTokenType.Identifier, match.Value, match.Index));
-            else if (match.Groups["Comment"].Success)
-                tokens.Add(new LexToken(LexTokenType.Comment, match.Value, match.Index));
-            else if (match.Groups["Whitespace"].Success)
-                tokens.Add(new LexToken(LexTokenType.Whitespace, match.Value, match.Index)); // Whitespace ignored
-            else if (match.Groups["Stringer"].Success)
-                tokens.Add(new LexToken(LexTokenType.Stringer, match.Value, match.Index)); // String literals
-            else if (match.Groups["Coron"].Success)
-                tokens.Add(new LexToken(LexTokenType.Symbol, match.Value, match.Index)); // Semicolon treated as a symbol
+            var type =
+                match.Groups["Header"].Success        ? LexTokenType.Header :
+                match.Groups["DECPrefix"].Success     ? LexTokenType.DECPrefix :
+                match.Groups["FunctionCall"].Success  ? LexTokenType.FunctionCall :
+                match.Groups["Operator"].Success      ? LexTokenType.Operator :
+                match.Groups["Symbol"].Success        ? LexTokenType.Symbol :
+                match.Groups["Mark"].Success          ? LexTokenType.Mark :
+                match.Groups["Identifier"].Success    ? LexTokenType.Identifier :
+                match.Groups["Comment"].Success       ? LexTokenType.Comment :
+                match.Groups["Whitespace"].Success    ? LexTokenType.Whitespace :
+                match.Groups["Stringer"].Success      ? LexTokenType.Stringer :
+                match.Groups["Coron"].Success         ? LexTokenType.Symbol :
+                LexTokenType.Unknown;
+
+            tokens.Add(new LexToken(type, match.Value, match.Index));
         }
         return tokens;
     }
-    
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static void LexError(List<LexToken> tokens)
     {
         if (tokens.FindAll(t => t.Type == LexTokenType.Header).Count() > 1)
         {
             Owen.warns.Add((1, "MultipleHeaders", "複数のヘッダーが検出されました。"));
+        }
+        
+        foreach (LexToken c in tokens.Where(t => t.Type == LexTokenType.Unknown).ToArray())
+        {
+            Owen.warns.Add((0, "UnknownToken", $"[不明なトークンが検出されました。\n{c.Value} at position {c.Position}]"));
         }
     }
 }

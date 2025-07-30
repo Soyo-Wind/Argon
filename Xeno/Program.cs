@@ -1,4 +1,6 @@
-﻿namespace Xeno;
+﻿
+using System.Runtime.CompilerServices;
+namespace Xeno;
 
 
 class Owen
@@ -30,7 +32,7 @@ class Owen
     {
         if (args.Length == 1)
         {
-            Console.WriteLine(DelWhite.RemoveWhitespace(Lexer.tokenRegex.ToString()));
+            Console.WriteLine(RemoveWhitespace(Lexer.tokenRegex.ToString()));
             return;
         }
         string input = @"▻FizzBuzz.main;
@@ -44,32 +46,34 @@ class Owen
 	≫;
 ≫;";
 
-        // トークン化
+        // トークン化・エラー検出・パース
         tokens = Lexer.Tokenize(input);
+        Lexer.LexError(tokens);
+        Parser parser = new(tokens);
+
+        Console.WriteLine($"=== クラス名: {Parser.className} ===");
 
         // 出力
         Console.WriteLine($"=== トークンカウント({tokens.Count}) ===");
         foreach (var t in tokens)
         {
-
             // 色分けして出力
             Console.ForegroundColor = t.Type switch
             {
-                LexTokenType.Header                                  => ConsoleColor.White,
-                LexTokenType.DECPrefix                               => ConsoleColor.Magenta,
-                LexTokenType.Identifier                              => ConsoleColor.Gray,
-                LexTokenType.Symbol     or LexTokenType.Coron        => ConsoleColor.Blue,
-                LexTokenType.Comment    or LexTokenType.Whitespace   => ConsoleColor.DarkGreen,
-                LexTokenType.Operator                                => ConsoleColor.Yellow,
-                LexTokenType.Mark       or LexTokenType.FunctionCall => ConsoleColor.Cyan,
-                LexTokenType.Stringer                                => ConsoleColor.DarkRed,
-                _                                                    => ConsoleColor.Black // Unknown or other types
+                LexTokenType.Header => ConsoleColor.White,
+                LexTokenType.DECPrefix => ConsoleColor.Magenta,
+                LexTokenType.Identifier => ConsoleColor.Gray,
+                LexTokenType.Symbol or LexTokenType.Coron => ConsoleColor.Blue,
+                LexTokenType.Comment or LexTokenType.Whitespace => ConsoleColor.DarkGreen,
+                LexTokenType.Operator => ConsoleColor.Yellow,
+                LexTokenType.Mark or LexTokenType.FunctionCall => ConsoleColor.Cyan,
+                LexTokenType.Stringer => ConsoleColor.DarkRed,
+                _ => ConsoleColor.Black // Unknown or other types
             };
             Console.Write(t.Value);
             Console.ResetColor();
         }
 
-        Lexer.LexError(tokens);
         if (warns.Count > 0)
         {
             Console.WriteLine($"=== 警告一覧({warns.Count}) ===");
@@ -78,5 +82,14 @@ class Owen
                 Console.WriteLine($"[ RG{warn.code} ] [{warn.errortype}] : {warn.message}");
             }
         }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static string RemoveWhitespace(string input)
+    {
+        return input.Replace("\r", "")
+                    .Replace("\n", "")
+                    .Replace("\t", "")
+                    .Replace(" ", "");
     }
 }

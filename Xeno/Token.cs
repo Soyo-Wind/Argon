@@ -3,13 +3,13 @@ namespace Xeno;
 
 internal class LexToken
 {
-
     public LexToken(LexTokenType type, string? value, int position)
     {
         Type = type;
         Value = value;
         Position = position;
     }
+
     public LexTokenType Type { get; set; }
     public string? Value { get; set; }
     public int Position { get; set; }

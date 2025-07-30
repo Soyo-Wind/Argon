@@ -5,8 +5,8 @@ namespace Xeno;
 
 internal static class Lexer
 {
-    internal static readonly Regex tokenRegex = new Regex(@$"
-        (?<Header>▻[a-zA-Z0-9_\.]+;)|
+    internal static readonly Regex tokenRegex = new(@$"
+        (?<Header>▻[a-zA-Z0-9_\.]+)|
         (?<DECPrefix>[{Owen.DECPrefix}§])|
         (?<FunctionCall>[{Owen.SigPrefix}{Owen.VerSigPrefix}])|
         (?<Operator>(\+\+|--|\+|-|<|>|==|=<|>=|!|!=|\*|\/|%|\?|:|∦|⩗|\||\^))|
@@ -20,12 +20,12 @@ internal static class Lexer
         RegexOptions.IgnorePatternWhitespace | RegexOptions.Multiline);
     public static List<LexToken> Tokenize(string code)
     {
-        var tokens = new List<LexToken>();
-        var matches = tokenRegex.Matches(code);
+        List<LexToken> tokens = new();
+        MatchCollection matches = tokenRegex.Matches(code);
 
         foreach (Match match in matches)
         {
-            var type =
+            LexTokenType type =
                 match.Groups["Header"].Success        ? LexTokenType.Header :
                 match.Groups["DECPrefix"].Success     ? LexTokenType.DECPrefix :
                 match.Groups["FunctionCall"].Success  ? LexTokenType.FunctionCall :

@@ -49,9 +49,6 @@ class Owen
         // トークン化・エラー検出・パース
         tokens = Lexer.Tokenize(input);
         Lexer.LexError(tokens);
-        Parser parser = new(tokens);
-
-        Console.WriteLine($"=== クラス名: {Parser.className} ===");
 
         // 出力
         Console.WriteLine($"=== トークンカウント({tokens.Count}) ===");

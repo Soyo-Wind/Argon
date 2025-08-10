@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="1024"
+   height="768"
+   viewBox="0 0 1024 768"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.4.2 (f4327f4, 2025-05-13)"
+   sodipodi:docname="cons.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="px"
+     inkscape:zoom="0.74301455"
+     inkscape:cx="469.70817"
+     inkscape:cy="444.80959"
+     inkscape:window-width="1920"
+     inkscape:window-height="1009"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs1">
+    <rect
+       x="149.39142"
+       y="453.55774"
+       width="226.10594"
+       height="253.02331"
+       id="rect5" />
+    <linearGradient
+       id="swatch5"
+       inkscape:swatch="solid">
+      <stop
+         style="stop-color:#000000;stop-opacity:1;"
+         offset="0"
+         id="stop5" />
+    </linearGradient>
+    <linearGradient
+       id="swatch4"
+       inkscape:swatch="solid">
+      <stop
+         style="stop-color:#000000;stop-opacity:1;"
+         offset="0"
+         id="stop4" />
+    </linearGradient>
+    <linearGradient
+       id="swatch3"
+       inkscape:swatch="solid">
+      <stop
+         style="stop-color:#ff2a2a;stop-opacity:1;"
+         offset="0"
+         id="stop3" />
+    </linearGradient>
+    <rect
+       x="205.56134"
+       y="-11.420074"
+       width="692.80822"
+       height="169.74754"
+       id="rect2" />
+    <rect
+       x="83.747212"
+       y="70.423792"
+       width="749.19945"
+       height="160.50135"
+       id="rect1" />
+    <rect
+       x="83.747215"
+       y="70.42379"
+       width="144.9044"
+       height="75.711618"
+       id="rect1-4" />
+    <rect
+       x="83.747215"
+       y="70.42379"
+       width="144.9044"
+       height="75.711617"
+       id="rect1-4-6" />
+    <rect
+       x="149.39142"
+       y="453.55774"
+       width="226.10594"
+       height="253.02332"
+       id="rect5-1" />
+    <rect
+       x="83.747215"
+       y="70.42379"
+       width="144.9044"
+       height="75.711617"
+       id="rect1-4-3" />
+    <rect
+       x="149.39142"
+       y="453.55774"
+       width="226.10594"
+       height="253.02332"
+       id="rect5-3" />
+    <rect
+       x="83.747215"
+       y="70.42379"
+       width="144.9044"
+       height="75.711617"
+       id="rect1-4-3-0" />
+    <rect
+       x="149.39142"
+       y="453.55774"
+       width="226.10594"
+       height="253.02332"
+       id="rect5-3-2" />
+    <rect
+       x="83.747215"
+       y="70.42379"
+       width="144.9044"
+       height="75.711617"
+       id="rect1-4-3-00" />
+    <rect
+       x="149.39142"
+       y="453.55774"
+       width="226.10594"
+       height="253.02332"
+       id="rect5-3-6" />
+  </defs>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <text
+       xml:space="preserve"
+       id="text1"
+       style="font-size:64px;font-family:'851H-kktt';-inkscape-font-specification:'851H-kktt';text-align:start;writing-mode:lr-tb;direction:ltr;white-space:pre;shape-inside:url(#rect1);fill:#000000"
+       transform="translate(96.440716,127.3889)"><tspan
+         x="83.748047"
+         y="133.42383"
+         id="tspan2">'(1 2 3) =&gt; '(1 (2 3))
+</tspan><tspan
+         x="83.748047"
+         y="213.42383"
+         id="tspan3">と解釈する</tspan></text>
+    <text
+       xml:space="preserve"
+       id="text2"
+       style="font-size:96px;font-family:'851H-kktt';-inkscape-font-specification:'851H-kktt';text-align:start;writing-mode:lr-tb;direction:ltr;white-space:pre;shape-inside:url(#rect2);fill:#000000"
+       transform="translate(-24.384113,63.097353)"><tspan
+         x="205.56055"
+         y="83.080078"
+         id="tspan4">'(1 2 3)の場合</tspan></text>
+    <rect
+       style="fill:#000000;fill-opacity:0;stroke:#000000;stroke-width:1.86163;stroke-opacity:1"
+       id="rect4"
+       width="204.69972"
+       height="223.25732"
+       x="209.35275"
+       y="435.34531" />
+    <text
+       xml:space="preserve"
+       id="text1-2"
+       style="font-size:42.6667px;font-family:'851H-kktt';-inkscape-font-specification:'851H-kktt';text-align:start;writing-mode:lr-tb;direction:ltr;white-space:pre;shape-inside:url(#rect1-4);fill:#000000"
+       transform="translate(213.35947,298.67345)"><tspan
+         x="83.748047"
+         y="112.42386"
+         id="tspan6">car部</tspan></text>
+    <text
+       xml:space="preserve"
+       id="text5"
+       style="font-size:74.6667px;font-family:'851H-kktt';-inkscape-font-specification:'851H-kktt';text-align:start;writing-mode:lr-tb;direction:ltr;white-space:pre;shape-inside:url(#rect5);fill:#000000;fill-opacity:1;stroke:#000000;stroke-opacity:1"
+       transform="matrix(1.6545739,0,0,2.0945949,21.97379,-495.55803)"><tspan
+         x="149.39062"
+         y="527.05863"
+         id="tspan7">1</tspan></text>
+    <rect
+       style="fill:#000000;fill-opacity:0;stroke:#000000;stroke-width:2.42787;stroke-opacity:1"
+       id="rect4-3"
+       width="349.74139"
+       height="222.25006"
+       x="414.19009"
+       y="436.05505" />
+    <text
+       xml:space="preserve"
+       id="text1-2-2"
+       style="font-size:42.6667px;font-family:'851H-kktt';-inkscape-font-specification:'851H-kktt';text-align:start;writing-mode:lr-tb;direction:ltr;white-space:pre;shape-inside:url(#rect1-4-6);fill:#000000"
+       transform="translate(340.06983,297.19675)"><tspan
+         x="83.748047"
+         y="112.42386"
+         id="tspan8">cdr部</tspan></text>
+    <rect
+       style="fill:#000000;fill-opacity:0;stroke:#000000;stroke-width:1.21578;stroke-opacity:1"
+       id="rect4-1"
+       width="153.97516"
+       height="126.58916"
+       x="431.61212"
+       y="516.61163" />
+    <text
+       xml:space="preserve"
+       id="text1-2-3"
+       style="font-size:42.6667px;font-family:'851H-kktt';-inkscape-font-specification:'851H-kktt';text-align:start;writing-mode:lr-tb;direction:ltr;white-space:pre;shape-inside:url(#rect1-4-3-0);display:inline;fill:#000000"
+       transform="matrix(1.2445707,0,0,1.1876565,340.25274,352.54354)"><tspan
+         x="83.748047"
+         y="112.42386"
+         id="tspan9">car部</tspan></text>
+    <text
+       xml:space="preserve"
+       id="text5-7"
+       style="font-size:74.6667px;font-family:'851H-kktt';-inkscape-font-specification:'851H-kktt';text-align:start;writing-mode:lr-tb;direction:ltr;white-space:pre;shape-inside:url(#rect5-3-2);display:inline;fill:#000000;fill-opacity:1;stroke:#000000;stroke-opacity:1"
+       transform="matrix(1.2445707,0,0,1.1876565,290.66563,-11.220012)"><tspan
+         x="149.39062"
+         y="527.05863"
+         id="tspan10">2</tspan></text>
+    <rect
+       style="fill:#000000;fill-opacity:0;stroke:#000000;stroke-width:1.21578;stroke-opacity:1"
+       id="rect4-1-8"
+       width="153.97516"
+       height="126.58916"
+       x="584.69434"
+       y="516.61163" />
+    <text
+       xml:space="preserve"
+       id="text1-2-3-9"
+       style="font-size:42.6667px;font-family:'851H-kktt';-inkscape-font-specification:'851H-kktt';text-align:start;writing-mode:lr-tb;direction:ltr;white-space:pre;shape-inside:url(#rect1-4-3-00);display:inline;fill:#000000"
+       transform="matrix(1.2445707,0,0,1.1876565,493.33494,352.54354)"><tspan
+         x="83.748047"
+         y="112.42386"
+         id="tspan11">cdr部</tspan></text>
+    <text
+       xml:space="preserve"
+       id="text5-7-4"
+       style="font-size:74.6667px;font-family:'851H-kktt';-inkscape-font-specification:'851H-kktt';text-align:start;writing-mode:lr-tb;direction:ltr;white-space:pre;shape-inside:url(#rect5-3-6);display:inline;fill:#000000;fill-opacity:1;stroke:#000000;stroke-opacity:1"
+       transform="matrix(1.2445707,0,0,1.1876565,443.74783,-11.220012)"><tspan
+         x="149.39062"
+         y="527.05863"
+         id="tspan12">3</tspan></text>
+  </g>
+</svg>

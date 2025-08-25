@@ -18,3 +18,5 @@ vid[<{戻り値}>:<{引数}>:<処理>]
 %hello = vid[<str>:<nil>:<retn["hello"]>]
 eval[%hello] ; "hello"
 ```
+
+#型 

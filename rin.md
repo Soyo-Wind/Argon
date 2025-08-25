@@ -1,6 +1,6 @@
 # rin 型 (stRINg)
 
-[eval](./eval関数.md) を使って評価します.
+[expr](./expr.md) を使って評価します.
 
 定義：
 

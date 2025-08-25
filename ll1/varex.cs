@@ -1,5 +1,4 @@
 
-using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace ll1;
@@ -89,6 +88,7 @@ class VEx
                         if (line[pos] == ',')
                             pos++;
                     }
+                    values[0] = new(NEx.numval(values[0].ToString()));
                 }
                 Owen.addCode(type switch
                 {

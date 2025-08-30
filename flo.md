@@ -18,7 +18,7 @@ flo[<値>]
 
 ```
 %pi = flo[<3.14>]
-eval[%pi] ; 3.14 (flo)
+expr[%pi] ; 3.14 (flo)
 ```
 
 #型 

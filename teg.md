@@ -18,7 +18,7 @@ teg[<値>]
 
 ```
 %one = teg[<1>]
-eval[%one] ; 1 (teg)
+expr[%one] ; 1 (teg)
 ```
 
 #型

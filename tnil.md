@@ -12,7 +12,7 @@ tnil[<値(t(真),またはnil(偽))>]
 
 ```
 %t = rin[<t>]
-eval[%t] ; t
+expr[%t] ; t
 ```
 
 #型

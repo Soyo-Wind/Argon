@@ -15,7 +15,7 @@ rin[<値(ダブルクォーテーションで囲む)>]
 
 ```
 %hello = rin[<"hello">]
-eval[%hello] ; "hello"
+expr[%hello] ; "hello"
 ```
 
 #型

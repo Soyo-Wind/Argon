@@ -1,7 +1,5 @@
 # rin 型 (stRINg)
 
-[expr](./expr.md) を使って評価します.
-
 定義：
 
 ```
@@ -15,7 +13,7 @@ rin[<値(ダブルクォーテーションで囲む)>]
 
 ```
 %hello = rin[<"hello">]
-expr[%hello] ; "hello"
+stut(%hello) ; "hello"
 ```
 
 #型

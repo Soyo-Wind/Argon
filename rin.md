@@ -13,7 +13,7 @@ rin[<値(ダブルクォーテーションで囲む)>]
 
 ```
 %hello = rin[<"hello">]
-stut(%hello) ; "hello"
+$stut(%hello) ; "hello"
 ```
 
 #型

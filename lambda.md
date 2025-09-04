@@ -5,10 +5,10 @@ lambda式.
 定義：
 
 ```
-lambda[<lambda式>]
+lambda[<引数(,区切り):式>]
 ```
 
-関数を使った場合（l1には、関数がないので、python）
+関数を使った場合（l1には、関数定義がないので、python）
 
 ```python
 def square(x):
@@ -17,9 +17,11 @@ y=square(2)
 print(y)
 ```
 
-lambdaを使った場合（l1）
+lambdaを使った場合（l2）（l関数を使います）
 
 ```
-%y = lambda[<x: x**2>]
-stut(%y(2))
+%y = lambda[<x>,<x 2 pow>]
+$stut($l(%y,2))
 ```
+
+#型 

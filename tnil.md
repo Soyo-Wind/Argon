@@ -10,7 +10,7 @@ tnil[<値(t(真),またはnil(偽))>]
 
 ```
 %t = rin[<t>]
-stut(%t) ; t
+$stut(%t) ; t
 ```
 
 #型

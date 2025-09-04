@@ -8,7 +8,7 @@ lambda式.
 lambda[<引数(,区切り):式>]
 ```
 
-関数を使った場合（l1には、関数定義がないので、python）
+関数を使った場合（l2には、関数定義がないので、python）
 
 ```python
 def square(x):

@@ -1,0 +1,7 @@
+def teg a 0
+def teg b 0
+def teg c 0
+in a
+in b
+in c
+outln (max(max(a,b),c) - min(min(a,b),c))

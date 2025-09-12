@@ -1,109 +1,125 @@
-
+using System.Diagnostics;
 using System.Text;
 
 class DS2
 {
-    // 生成されるC++コードのバッファ（パフォーマンス向上のためStringBuilder使用）
-    private static StringBuilder cpplang = new(@"using namespace std;
-int main() {
-    int QUITCODE = 0;
-");
-    private static StringBuilder includes = new("#include <bits/stdc++.h>\n");
-    private static readonly string finlang = @"goto QUITLABEL;
-    QUITLABEL:return QUITCODE;
-}
-";
-
     private static List<string> IncludedHeaders = new();
+    private static bool inFunction = false;
+    private static readonly Stack<string> mainBlockStack = new();
+    private static readonly Stack<string> funcBlockStack = new();
+    private static int funcIndent = 0;
+    private static int currentIndent = 0; // mainは初期インデント1で開始
 
-    private static bool inFunction = false; // 関数定義内かどうかを追跡（将来の拡張用）
-    private static readonly Stack<string> blockStack = new Stack<string>(); // ブロックの種類を追跡
-
-    // D#の型をC++の型にマッピングする辞書
-    private static readonly Dictionary<string, string> TypeMap = new()
-    {
-        { "rin", "string" },
-        { "teg", "int" },
-        { "cim", "double" },
-        { "tnil", "bool" }
-    };
-
-    [STAThread]
     public static void Main(string[] args)
     {
+        // 制御構文のリスト
+        HashSet<string> controlKeywords = new() { "if", "elif", "else", "el", "for", "while", "each", "func" };
         try
         {
-            // D#コードをファイルから読み込み
             string code = File.ReadAllText(@"m.ds");
-            string[] lines = code.Split('\n');
-            int currentIndent = 0; // 現在のインデントレベル（スペース4つ=1レベル）
-            bool inConditionalBlock = false; // if/elif/else/elブロックの追跡
+            string[] lines = code.Replace("\r", "").Split('\n');
+            bool inConditionalBlock = false;
 
             for (int i = 0; i < lines.Length; i++)
             {
-                string line = lines[i].Replace("\r", "").TrimEnd(); // 改行コードの正規化
+                string line = lines[i].TrimEnd();
                 if (string.IsNullOrWhiteSpace(line)) continue;
-
-                // インデントをカウント（スペース4つ=1レベル）
-                int indentCount = CountIndent(line);
-
-                string trimmedLine = line.TrimStart();
+                
+                int indentCount = Tools.CountIndent(line);
+                string trimmedLine = line.Substring(indentCount * 4);
                 string[] tokens = Split(trimmedLine, i + 1);
 
-                // トークンが空の場合はスキップ
-                if (tokens.Length == 0) continue;
-
-                // 条件分岐以外の構文でチェーンを終了（インデント0の場合）
-                if (tokens[0] != "if" && tokens[0] != "elif" && tokens[0] != "else" && tokens[0] != "el" && indentCount == 0)
+                // インデント0で制御構文以外の場合、条件ブロックをリセット
+                if (!controlKeywords.Contains(tokens[0]) && indentCount == 0)
                 {
                     inConditionalBlock = false;
-                }
-
-                // インデント減少時にブロックを閉じる
-                while (indentCount < currentIndent)
-                {
-                    if (inFunction && currentIndent == 1)
+                    if (inFunction)
                     {
-                        inFunction = false; // 関数定義の終了（将来用）
+                        // funcブロックの終了
+                        while (funcIndent > 0)
+                        {
+                            Tools.funcDefs.Append("}\n");
+                            Tools.FuncOpenBraces--;
+                            funcIndent--;
+                            if (funcBlockStack.Count > 0) funcBlockStack.Pop();
+                        }
+                        inFunction = false;
                     }
-                    if (blockStack.Count > 0) blockStack.Pop();
-                    cpplang.Append($"{Indent(--currentIndent)}}}\n");
                 }
 
-                // インデントチェック
-                if (indentCount != currentIndent)
+                // インデント減少処理
+                if (inFunction)
                 {
-                    throw new Exception($"Invalid indent at line {i + 1}: Expected {currentIndent * 4} spaces, found {indentCount * 4} spaces.");
+                    if (indentCount < funcIndent)
+                    {
+                        while (indentCount < funcIndent)
+                        {
+                            Tools.funcDefs.Append("}\n");
+                            Tools.FuncOpenBraces--;
+                            funcIndent--;
+                            if (funcBlockStack.Count > 0) funcBlockStack.Pop();
+                        }
+                        if (funcIndent == 0) inFunction = false;
+                    }
                 }
-
-                // 構文変換
-                ConvertToCpp(tokens, trimmedLine, currentIndent, ref inConditionalBlock, i + 1);
-
-                // if/elif/else/el/for/whileならインデント増加
-                if (tokens[0] == "if" || tokens[0] == "elif" || tokens[0] == "else" || tokens[0] == "el" ||
-                    tokens[0] == "for" || tokens[0] == "while")
+                else
                 {
-                    blockStack.Push(tokens[0]);
-                    currentIndent++;
+                    if (indentCount < currentIndent && mainBlockStack.Count > 0)
+                    {
+                        while (currentIndent > indentCount && mainBlockStack.Count > 0)
+                        {
+                            Tools.cpplang.Append("}\n");
+                            Tools.MainOpenBraces--;
+                            currentIndent--;
+                            mainBlockStack.Pop();
+                        }
+
+                    }
+                }
+                // ブロック開始の処理を先に行う（←これが重要）
+                if (controlKeywords.Contains(tokens[0]))
+                {
+                    if (inFunction)
+                    {
+                        funcBlockStack.Push(tokens[0]);
+                        funcIndent++;
+                        Tools.FuncOpenBraces++;
+                    }
+                    else
+                    {
+                        mainBlockStack.Push(tokens[0]);
+                        currentIndent++;
+                        Tools.MainOpenBraces++;
+                    }
                     if (tokens[0] == "if" || tokens[0] == "elif") inConditionalBlock = true;
+                    if (tokens[0] == "func") inFunction = true;
                 }
+                
+                // その後にコード変換を行う（←ブロック内として扱われる）
+                ConvertToCpp(tokens, trimmedLine, ref inConditionalBlock, ref inFunction, i + 1);
+                
             }
 
-            // 残りのブロックを閉じる
-            while (currentIndent > 0)
+            // 残りのfuncブロックを閉じる
+            while (funcIndent > 0)
             {
-                if (inFunction && currentIndent == 1)
-                {
-                    inFunction = false;
-                }
-                if (blockStack.Count > 0) blockStack.Pop();
-                cpplang.Append($"{Indent(--currentIndent)}}}\n");
+                Tools.funcDefs.Append("}\n");
+                funcIndent--;
+                Tools.FuncOpenBraces--;
+                if (funcBlockStack.Count > 0) funcBlockStack.Pop();
             }
 
-            // C++コードを完成させ、ファイルに出力
-            includes.Append(cpplang+finlang);
-            cpplang = includes;
-            File.WriteAllText("main.cpp", cpplang.ToString());
+            // 残りのmainブロックを閉じる
+            while (mainBlockStack.Count > 0)
+            {
+                Tools.cpplang.Append("}\n");
+                Tools.MainOpenBraces--;
+                mainBlockStack.Pop();
+            }
+
+            // コード結合
+            string fullCode = Tools.includes.ToString() + Tools.funcDefs.ToString() + Tools.cpplang.ToString() + Tools.finlang;
+            File.WriteAllText("main.cpp", fullCode);
         }
         catch (Exception ex)
         {
@@ -111,57 +127,17 @@ int main() {
         }
     }
 
-    // インデントを生成（スペース4つ×レベル）
-    private static string Indent(int level) => new string(' ', level * 4);
-
-    // インデントレベルをカウント
-    private static int CountIndent(string line)
-    {
-        int count = 0;
-        foreach (char c in line)
-        {
-            if (c != ' ') break;
-            count++;
-        }
-        return count / 4; // スペース4つ=1インデントレベル
-    }
-
-    // D#の型をC++の型に変換
-    private static string Ctype(string type, int lineNumber)
-    {
-        if (TypeMap.TryGetValue(type, out var ctype))
-            return ctype;
-        throw new Exception($"Unknown type: {type} at line {lineNumber}");
-    }
-    
-    private static readonly HashSet<string> ValidHeaders = new HashSet<string>
-    {
-        "iostream", "vector", "string", "cmath", "algorithm", "array", "deque", "list",
-        "forward_list", "set", "map", "unordered_set", "unordered_map", "stack", "queue",
-        "span", "flat_map", "flat_set", "mdspan", "fstream", "sstream", "iomanip", "ios",
-        "iosfwd", "ostream", "istream", "print", "format", "string_view", "regex", "charconv",
-        "complex", "numeric", "random", "numbers", "bitset", "chrono", "ctime", "thread",
-        "mutex", "condition_variable", "future", "atomic", "shared_mutex", "latch", "barrier",
-        "semaphore", "stdexcept", "exception", "system_error", "cassert", "cctype", "cerrno",
-        "cfenv", "cfloat", "cinttypes", "climits", "clocale", "csetjmp", "csignal", "cstdarg",
-        "cstddef", "cstdint", "cstdio", "cstdlib", "cstring", "ctgmath", "cuchar", "cwchar",
-        "cwctype", "filesystem", "locale", "codecvt", "type_traits", "typeindex", "typeinfo",
-        "ratio", "new", "memory", "memory_resource", "coroutine", "concepts", "ranges",
-        "spanstream", "functional", "iterator", "utility", "tuple", "optional", "variant",
-        "any", "compare", "bit", "source_location", "version"
-    };
-
-    // トークン分割（文字列リテラルと括弧を考慮）
     private static string[] Split(string a, int lineNumber)
     {
         a = a.TrimEnd() + " ";
         List<string> strings = new();
         int start = 0;
         bool inString = false, inChar = false;
+        int parenDepth = 0;
 
         for (int i = 0; i < a.Length; i++)
         {
-            if (a[i] == ' ' && !inString)
+            if (a[i] == ' ' && !inString && !inChar && parenDepth == 0)
             {
                 if (i > start)
                     strings.Add(a[start..i]);
@@ -195,24 +171,21 @@ int main() {
                     start = i;
                 }
             }
-            else if (!inString && a[i] == '(')
+            else if (a[i] == '(' && !inString && !inChar)
             {
-                int depth = 1;
-                int startParen = i;
-                i++;
-                while (i < a.Length && depth > 0)
-                {
-                    if (a[i] == '(') depth++;
-                    else if (a[i] == ')') depth--;
-                    i++;
-                }
-                if (depth == 0)
-                {
-                    string innerExpr = a[startParen..i];
-                    strings.Add(innerExpr);
+                if (parenDepth == 0)
                     start = i;
+                parenDepth++;
+            }
+            else if (a[i] == ')' && !inString && !inChar)
+            {
+                parenDepth--;
+                if (parenDepth == 0)
+                {
+                    strings.Add(a[start..(i + 1)]);
+                    start = i + 1;
                 }
-                else
+                else if (parenDepth < 0)
                 {
                     throw new Exception($"Unmatched parenthesis at line {lineNumber}");
                 }
@@ -221,17 +194,19 @@ int main() {
 
         if (inString)
             throw new Exception($"Unclosed string literal at line {lineNumber}");
-
+        if (parenDepth > 0)
+            throw new Exception($"Unclosed parenthesis at line {lineNumber}");
         if (start < a.Length - 1)
             strings.Add(a[start..(a.Length - 1)]);
 
         return strings.ToArray();
     }
 
-    // D#構文をC++に変換
-    private static void ConvertToCpp(string[] tokens, string line, int indentLevel, ref bool inConditionalBlock, int lineNumber)
+    private static void ConvertToCpp(string[] tokens, string line, ref bool inConditionalBlock, ref bool inFunction, int lineNumber)
     {
+        Console.WriteLine($"Line {lineNumber}: indent={Tools.CountIndent(line)}, \ncurrentIndent={currentIndent}, \nfuncIndent={funcIndent}, \nmainBlockStack.Count={mainBlockStack.Count}, \nfuncBlockStack.Count={funcBlockStack.Count}\n");
         string ev = tokens[0];
+        StringBuilder targetBuffer = inFunction ? Tools.funcDefs : Tools.cpplang;
         try
         {
             if (ev == "def")
@@ -240,39 +215,42 @@ int main() {
                 string type = tokens[1];
                 string name = tokens[2];
                 string value = tokens[3];
-                string ctype = Ctype(type, lineNumber);
-                cpplang.Append($"{Indent(indentLevel)}{ctype} {name} = {value};\n");
+                string ctype = Tools.Ctype(type, lineNumber);
+                if (value[0] == '(' && value[^1] == ')')
+                {
+                    value = value[1..^1];
+                }
+                targetBuffer.Append(type.Split(':')[0]=="lis"?$"{ctype} {name}{value};\n":$"{ctype} {name} = {value};\n");
             }
-            else if (ev == "deflis")
-            {
-                if (tokens.Length != 4) throw new Exception($"Invalid deflis syntax at line {lineNumber}: Expected 'deflis <type> <name> <value>'");
-                string type = tokens[1];
-                string name = tokens[2];
-                string value = tokens[3];
-                string ctype = Ctype(type, lineNumber);
-                cpplang.Append($"{Indent(indentLevel)}vector<{ctype}> {name}{value};\n");
-            }
+            // 他のコマンドは変更なし
             else if (ev == "q")
             {
                 if (tokens.Length != 3) throw new Exception($"Invalid q syntax at line {lineNumber}: Expected 'q <name> <value>'");
                 string name = tokens[1];
                 string value = tokens[2];
-                cpplang.Append($"{Indent(indentLevel)}{name} = {value};\n");
+                if (value[0] == '(' && value[^1] == ')')
+                {
+                    value = value[1..^1];
+                }
+                targetBuffer.Append($"{name} = {value};\n");
             }
             else if (ev == "add")
             {
                 if (tokens.Length != 3) throw new Exception($"Invalid add syntax at line {lineNumber}: Expected 'add <name> <value>'");
                 string name = tokens[1];
                 string value = tokens[2];
-                cpplang.Append($"{Indent(indentLevel)}{name}.push_back({value});\n");
-
+                if (value[0] == '(' && value[^1] == ')')
+                {
+                    value = value[1..^1];
+                }
+                targetBuffer.Append($"{name}.push_back({value});\n");
             }
             else if (ev == "del")
             {
                 if (tokens.Length != 3) throw new Exception($"Invalid del syntax at line {lineNumber}: Expected 'del <name> <position>'");
                 string name = tokens[1];
                 string pos = tokens[2];
-                cpplang.Append($"{Indent(indentLevel)}{name}.erase({pos});\n");
+                targetBuffer.Append($"{name}.erase({name}.begin() + {pos});\n");
             }
             else if (ev == "ins")
             {
@@ -280,44 +258,53 @@ int main() {
                 string name = tokens[1];
                 string pos = tokens[2];
                 string value = tokens[3];
-                cpplang.Append($"{Indent(indentLevel)}{name}.insert({pos},{value});\n");
+                if (value[0] == '(' && value[^1] == ')')
+                {
+                    value = value[1..^1];
+                }
+                targetBuffer.Append($"{name}.insert({name}.begin() + {pos}, {value});\n");
             }
             else if (ev == "outln")
             {
                 if (tokens.Length < 2) throw new Exception($"Invalid outln syntax at line {lineNumber}: Expected 'outln <value>'");
-                string value = string.Join(" ", tokens[1..]); // 複数トークンの場合に対応
-                cpplang.Append($"{Indent(indentLevel)}cout << {value} << endl;\n");
+                string value = string.Join(" ", tokens[1..]);
+                if (value[0] == '(' && value[^1] == ')')
+                {
+                    value = value[1..^1];
+                }
+                targetBuffer.Append($"cout << {value} << endl;\n");
             }
             else if (ev == "out")
             {
                 if (tokens.Length < 2) throw new Exception($"Invalid out syntax at line {lineNumber}: Expected 'out <value>'");
                 string value = string.Join(" ", tokens[1..]);
-                cpplang.Append($"{Indent(indentLevel)}cout << {value};\n");
+                if (value[0] == '(' && value[^1] == ')')
+                {
+                    value = value[1..^1];
+                }
+                targetBuffer.Append($"cout << {value};\n");
             }
             else if (ev == "in")
             {
                 if (tokens.Length != 2) throw new Exception($"Invalid in syntax at line {lineNumber}: Expected 'in <variable>'");
                 string name = tokens[1];
-                cpplang.Append($"{Indent(indentLevel)}cin >> {name};\n");
+                targetBuffer.Append($"cin >> {name};\n");
             }
-            else if (ev == "if")
+            else if (ev == "if" || ev == "elif")
             {
-                if (tokens.Length < 2) throw new Exception($"Invalid if syntax at line {lineNumber}: Expected 'if <condition>'");
+                if (tokens.Length < 2) throw new Exception($"Invalid {ev} syntax at line {lineNumber}: Expected '{ev} <condition>'");
                 string condition = string.Join(" ", tokens[1..]);
-                cpplang.Append($"{Indent(indentLevel)}if ({condition}) {{\n");
-            }
-            else if (ev == "elif")
-            {
-                if (!inConditionalBlock) throw new Exception($"elif without preceding if at line {lineNumber}: {line}");
-                if (tokens.Length < 2) throw new Exception($"Invalid elif syntax at line {lineNumber}: Expected 'elif <condition>'");
-                string condition = string.Join(" ", tokens[1..]);
-                cpplang.Append($"{Indent(indentLevel)}else if ({condition}) {{\n");
+                targetBuffer.Append($"{(ev == "if" ? "if" : "else if")} ({condition}) {{\n");
+                if (inFunction) Tools.FuncOpenBraces++;
+                else Tools.MainOpenBraces++;
             }
             else if (ev == "else" || ev == "el")
             {
                 if (!inConditionalBlock) throw new Exception($"else/el without preceding if/elif at line {lineNumber}: {line}");
                 if (tokens.Length > 1) throw new Exception($"Invalid else/el syntax at line {lineNumber}: Expected 'else' or 'el'");
-                cpplang.Append($"{Indent(indentLevel)}else {{\n");
+                targetBuffer.Append($"else {{\n");
+                if (inFunction) Tools.FuncOpenBraces++;
+                else Tools.MainOpenBraces++;
             }
             else if (ev == "for")
             {
@@ -326,37 +313,106 @@ int main() {
                 string start = tokens[2];
                 string condition = tokens[3];
                 string increment = tokens[4];
-                cpplang.Append($"{Indent(indentLevel)}for (int {varName} = {start}; {condition}; {varName} +={increment}) {{\n");
+                if (start[0] == '(' && start[^1] == ')')
+                {
+                    start = start[1..^1];
+                }
+                if (condition[0] == '(' && condition[^1] == ')')
+                {
+                    condition = condition[1..^1];
+                }
+                if (increment[0] == '(' && increment[^1] == ')')
+                {
+                    increment = increment[1..^1];
+                }
+                targetBuffer.Append($"for (int {varName} = {start}; {condition}; {varName} += {increment}) {{\n");
+                if (inFunction) Tools.FuncOpenBraces++;
+                else Tools.MainOpenBraces++;
             }
             else if (ev == "while")
             {
                 if (tokens.Length < 2) throw new Exception($"Invalid while syntax at line {lineNumber}: Expected 'while <condition>'");
                 string condition = string.Join(" ", tokens[1..]);
-                cpplang.Append($"{Indent(indentLevel)}while ({condition}) {{\n");
+                if (condition[0] == '(' && condition[^1] == ')')
+                {
+                    condition = condition[1..^1];
+                }
+                targetBuffer.Append($"while ({condition}) {{\n");
+                if (inFunction) Tools.FuncOpenBraces++;
+                else Tools.MainOpenBraces++;
+            }
+            else if (ev == "each")
+            {
+                if (tokens.Length != 3) throw new Exception($"Invalid each syntax at line {lineNumber}: Expected 'each <var> <container>'");
+                string varName = tokens[1];
+                string container = tokens[2];
+                if (container[0] == '(' && container[^1] == ')')
+                {
+                    container = container[1..^1];
+                }
+                targetBuffer.Append($"for (auto& {varName} : {container}) {{\n");
+                if (inFunction) Tools.FuncOpenBraces++;
+                else Tools.MainOpenBraces++;
+            }
+            else if (ev == "func")
+            {
+                if (tokens.Length < 4 || (tokens.Length - 3) % 2 != 0) throw new Exception($"Invalid func syntax at line {lineNumber}: Expected 'func <return_type> <name> <type1> <arg1> <type2> <arg2> ...'");
+                string returnType = Tools.Ctype(tokens[1], lineNumber);
+                string funcName = tokens[2];
+                if (Tools.DefinedFunctions.Contains(funcName))
+                    throw new Exception($"Function {funcName} already defined at line {lineNumber}");
+                Tools.DefinedFunctions.Add(funcName);
+                List<string> args = new();
+                for (int j = 3; j < tokens.Length; j += 2)
+                {
+                    string argType = Tools.Ctype(tokens[j], lineNumber);
+                    string argName = tokens[j + 1];
+                    args.Add($"{argType} {argName}");
+                }
+                string argList = string.Join(", ", args);
+                Tools.funcDefs.Append($"{returnType} {funcName}({argList}) {{\n");
+                Tools.FuncOpenBraces++;
+                funcIndent = 1;
+            }
+            else if (ev == "return")
+            {
+                if (tokens.Length != 2) throw new Exception($"Invalid return syntax at line {lineNumber}: Expected 'return <value>'");
+                string value = tokens[1];
+                if (value[0] == '(' && value[^1] == ')')
+                {
+                    value = value[1..^1];
+                }
+                targetBuffer.Append($"return {value};\n");
             }
             else if (ev == "quit")
             {
                 if (tokens.Length != 2) throw new Exception($"Invalid quit syntax at line {lineNumber}: Expected 'quit <code>'");
                 string quitcode = tokens[1];
-                cpplang.Append($"{Indent(indentLevel)}QUITCODE = {quitcode};\n{Indent(indentLevel)}goto QUITLABEL;\n");
+                targetBuffer.Append($"QUITCODE = {quitcode};\ngoto QUITLABEL;\n");
             }
             else if (ev == "use")
             {
                 if (tokens.Length != 2) throw new Exception($"Invalid use syntax at line {lineNumber}: Expected 'use <header>'");
                 string header = tokens[1];
-                if (ValidHeaders.Contains(header) || IncludedHeaders.Contains(header))
+                if (!Tools.ValidHeaders.Contains(header) && !IncludedHeaders.Contains(header))
+                {
                     throw new Exception($"Invalid header: {header} at line {lineNumber}");
-                IncludedHeaders.Add(header);
-                includes.Append($"#include <{header}>\n");
+                }
+                if (!IncludedHeaders.Contains(header))
+                {
+                    IncludedHeaders.Add(header);
+                    Tools.includes.Append($"#include <{header}>\n");
+                }
             }
             else
             {
-                throw new Exception($"Unknown command: {ev} at line {lineNumber}");
+                throw new Exception($"Unknown command: {ev} at line {lineNumber}, line: {line}");
             }
         }
         catch (Exception ex)
         {
-            throw new Exception($"Error at line {lineNumber}: {line}\n{ex.Message}");
+            Console.WriteLine($"Error at line {lineNumber}: {line}\n{ex.Message}");
+            targetBuffer.Append($"/* Error: {ex.Message} */\n");
         }
     }
 }

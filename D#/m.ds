@@ -1,7 +1,25 @@
-def teg a 0
-def teg b 0
-def teg c 0
-in a
-in b
-in c
-outln (max(max(a,b),c) - min(min(a,b),c))
+def teg n 0
+def teg ans 0
+in n
+def lis:teg a ((n))
+def lis:teg b ((n))
+def lis:teg c ((n))
+for i 0 i<n 1
+    in a[i]
+outln endl
+for i 0 i<n 1
+    in b[i]
+outln endl
+for i 0 i<n 1
+    in c[i]
+outln endl
+each x a
+    q ans ans+x
+def teg _ 0
+each x b
+    q _ _+x
+q ans ans*_
+each x b
+    q _ _+x
+q ans ans*_
+outln ans

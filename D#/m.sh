@@ -1,5 +1,5 @@
 #!/bin/bash
-dotnet run > log.txt
+./D# m.ds $1
 echo "dotnet ok"
 g++ main.cpp
 echo "g++ ok"

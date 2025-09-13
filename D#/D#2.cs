@@ -1,4 +1,4 @@
-using System.Diagnostics;
+
 using System.Text;
 
 class DS2
@@ -9,6 +9,7 @@ class DS2
     private static readonly Stack<string> funcBlockStack = new();
     private static int funcIndent = 0;
     private static int currentIndent = 0; // mainは初期インデント1で開始
+    private static bool log_;
 
     public static void Main(string[] args)
     {
@@ -16,7 +17,8 @@ class DS2
         HashSet<string> controlKeywords = new() { "if", "elif", "else", "el", "for", "while", "each", "func" };
         try
         {
-            string code = File.ReadAllText(@"m.ds");
+            string code = File.ReadAllText(args[0]);
+            log_ = args[1] == "t" ? true : false; // ログ出力の有無
             string[] lines = code.Replace("\r", "").Split('\n');
             bool inConditionalBlock = false;
 
@@ -24,7 +26,7 @@ class DS2
             {
                 string line = lines[i].TrimEnd();
                 if (string.IsNullOrWhiteSpace(line)) continue;
-                
+
                 int indentCount = Tools.CountIndent(line);
                 string trimmedLine = line.Substring(indentCount * 4);
                 string[] tokens = Split(trimmedLine, i + 1);
@@ -94,10 +96,10 @@ class DS2
                     if (tokens[0] == "if" || tokens[0] == "elif") inConditionalBlock = true;
                     if (tokens[0] == "func") inFunction = true;
                 }
-                
+
                 // その後にコード変換を行う（←ブロック内として扱われる）
                 ConvertToCpp(tokens, trimmedLine, ref inConditionalBlock, ref inFunction, i + 1);
-                
+
             }
 
             // 残りのfuncブロックを閉じる
@@ -132,68 +134,51 @@ class DS2
         a = a.TrimEnd() + " ";
         List<string> strings = new();
         int start = 0;
-        bool inString = false, inChar = false;
+        bool inScape = false;
         int parenDepth = 0;
 
         for (int i = 0; i < a.Length; i++)
         {
-            if (a[i] == ' ' && !inString && !inChar && parenDepth == 0)
+            if (a[i] == ' ' && parenDepth == 0 && !inScape)
             {
                 if (i > start)
                     strings.Add(a[start..i]);
                 start = i + 1;
             }
-            else if (a[i] == '"')
+            else if (a[i] == '"' && !inScape)
             {
-                if (inString)
+                i++;
+                while (i < a.Length && a[i] != '"')
                 {
-                    strings.Add(a[start..(i + 1)]);
-                    start = i + 1;
-                    inString = false;
+                    i++;
                 }
-                else
-                {
-                    inString = true;
-                    start = i;
-                }
+                strings.Add(a[start..i]);
+                start = i;
             }
-            else if (a[i] == '\'')
+            else if (a[i] == '\'' && !inScape)
             {
-                if (inChar)
+                i++;
+                while (i < a.Length && a[i] != '\'')
                 {
-                    strings.Add(a[start..(i + 1)]);
-                    start = i + 1;
-                    inChar = false;
+                    i++;
                 }
-                else
-                {
-                    inChar = true;
-                    start = i;
-                }
+                strings.Add(a[start..i]);
+                start = i;
             }
-            else if (a[i] == '(' && !inString && !inChar)
+            else if (a[i] == '(')
             {
-                if (parenDepth == 0)
-                    start = i;
-                parenDepth++;
-            }
-            else if (a[i] == ')' && !inString && !inChar)
-            {
-                parenDepth--;
-                if (parenDepth == 0)
+                parenDepth = 1;
+                i++;
+                while (i + 1 < a.Length && parenDepth > 0)
                 {
-                    strings.Add(a[start..(i + 1)]);
-                    start = i + 1;
+                    if (a[i] == '(') parenDepth++;
+                    else if (a[i] == ')') parenDepth--;
+                    i++;
                 }
-                else if (parenDepth < 0)
-                {
-                    throw new Exception($"Unmatched parenthesis at line {lineNumber}");
-                }
+                strings.Add(a[start..i]);
+                start = i;
             }
         }
-
-        if (inString)
-            throw new Exception($"Unclosed string literal at line {lineNumber}");
         if (parenDepth > 0)
             throw new Exception($"Unclosed parenthesis at line {lineNumber}");
         if (start < a.Length - 1)
@@ -204,7 +189,7 @@ class DS2
 
     private static void ConvertToCpp(string[] tokens, string line, ref bool inConditionalBlock, ref bool inFunction, int lineNumber)
     {
-        Console.WriteLine($"Line {lineNumber}: indent={Tools.CountIndent(line)}, \ncurrentIndent={currentIndent}, \nfuncIndent={funcIndent}, \nmainBlockStack.Count={mainBlockStack.Count}, \nfuncBlockStack.Count={funcBlockStack.Count}\n");
+        Console.Write(log_ ? $"Line {lineNumber}: indent={Tools.CountIndent(line)}, \ncurrentIndent={currentIndent}, \nfuncIndent={funcIndent}, \nmainBlockStack.Count={mainBlockStack.Count}, \nfuncBlockStack.Count={funcBlockStack.Count}\n\n" : "");
         string ev = tokens[0];
         StringBuilder targetBuffer = inFunction ? Tools.funcDefs : Tools.cpplang;
         try
@@ -220,7 +205,7 @@ class DS2
                 {
                     value = value[1..^1];
                 }
-                targetBuffer.Append(type.Split(':')[0]=="lis"?$"{ctype} {name}{value};\n":$"{ctype} {name} = {value};\n");
+                targetBuffer.Append(type.Split(':')[0] == "lis" ? $"{ctype} {name}{value};\n" : $"{ctype} {name} = {value};\n");
             }
             // 他のコマンドは変更なし
             else if (ev == "q")
@@ -293,7 +278,7 @@ class DS2
             else if (ev == "if" || ev == "elif")
             {
                 if (tokens.Length < 2) throw new Exception($"Invalid {ev} syntax at line {lineNumber}: Expected '{ev} <condition>'");
-                string condition = string.Join(" ", tokens[1..]);
+                string condition = tokens[1];
                 targetBuffer.Append($"{(ev == "if" ? "if" : "else if")} ({condition}) {{\n");
                 if (inFunction) Tools.FuncOpenBraces++;
                 else Tools.MainOpenBraces++;
@@ -404,6 +389,26 @@ class DS2
                     Tools.includes.Append($"#include <{header}>\n");
                 }
             }
+            else if (ev == "break")
+            {
+                if (tokens.Length != 1) throw new Exception($"Invalid break syntax at line {lineNumber}: Expected 'break'");
+                targetBuffer.Append("break;\n");
+            }
+            else if (ev == "continue")
+            {
+                if (tokens.Length != 1) throw new Exception($"Invalid continue syntax at line {lineNumber}: Expected 'continue'");
+                targetBuffer.Append("continue;\n");
+            }
+            else if (ev == "call")
+            {
+                if (tokens.Length < 2) throw new Exception($"Invalid call syntax at line {lineNumber}: Expected 'call <function_name> [args...]'");
+                string func = tokens[1];
+                if (func[0] == '(' && func[^1] == ')')
+                {
+                    func = func[1..^1];
+                }
+                targetBuffer.Append(func+";\n");
+            }
             else
             {
                 throw new Exception($"Unknown command: {ev} at line {lineNumber}, line: {line}");
@@ -414,5 +419,71 @@ class DS2
             Console.WriteLine($"Error at line {lineNumber}: {line}\n{ex.Message}");
             targetBuffer.Append($"/* Error: {ex.Message} */\n");
         }
+    }
+}
+class Tools
+{
+    // 生成されるC++コードのバッファ
+    internal static StringBuilder cpplang = new(@"
+int main() {
+int QUITCODE = 0;
+");
+    internal static StringBuilder includes = new("#include <bits/stdc++.h>\nusing namespace std;\n");
+    internal static StringBuilder funcDefs = new();
+    internal static readonly string finlang = @"goto QUITLABEL;
+QUITLABEL: return QUITCODE;
+}
+";
+    internal static readonly HashSet<string> ValidHeaders = new HashSet<string>
+    {
+        "iostream", "vector", "string", "cmath", "algorithm", "array", "deque", "list",
+    };
+
+    // 定義済み関数の管理
+    internal static readonly HashSet<string> DefinedFunctions = new HashSet<string>();
+
+    // ブロックの整合性チェック用
+    internal static int MainOpenBraces = 0; // mainの初期"{"
+    internal static int FuncOpenBraces = 0;
+
+    internal static readonly Dictionary<string, string> TypeMap = new()
+    {
+        { "rin", "string" },
+        { "teg", "int" },
+        { "cim", "double" },
+        { "tnil", "bool" },
+        {"lis","vector"}
+    };
+
+    internal static int CountIndent(string line)
+    {
+        int spaceCount = 0;
+        foreach (char c in line)
+        {
+            if (c == ' ') spaceCount++;
+            else if (c == '\t') spaceCount += 4; // タブもスペース4つ相当
+            else break;
+        }
+        return spaceCount / 4;
+    }
+
+
+    internal static string Ctype(string type, int lineNumber)
+    {
+        if (string.IsNullOrEmpty(type)) throw new Exception($"Invalid type at line {lineNumber}");
+
+        string[] parts = type.Split(':');
+        string baseType = parts[^1]; // 最後の部分がベース型
+        if (!TypeMap.TryGetValue(baseType, out var ctype))
+            throw new Exception($"Unknown base type: {baseType} at line {lineNumber}");
+
+        // ネストされたlisの数だけvectorを積む
+        for (int j = parts.Length - 2; j >= 0; j--)
+        {
+            if (parts[j] != "lis")
+                throw new Exception($"Invalid type format: {type} at line {lineNumber}. Expect 'lis:' repeated followed by base type.");
+            ctype = $"vector<{ctype}>";
+        }
+        return ctype;
     }
 }

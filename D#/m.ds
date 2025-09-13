@@ -1,25 +1,9 @@
-def teg n 0
-def teg ans 0
-in n
-def lis:teg a ((n))
-def lis:teg b ((n))
-def lis:teg c ((n))
-for i 0 i<n 1
-    in a[i]
-outln endl
-for i 0 i<n 1
-    in b[i]
-outln endl
-for i 0 i<n 1
-    in c[i]
-outln endl
-each x a
-    q ans ans+x
-def teg _ 0
-each x b
-    q _ _+x
-q ans ans*_
-each x b
-    q _ _+x
-q ans ans*_
+def rin s ("")
+in s
+def teg ans 1
+each x s
+    if (x=='+')
+        q ans ans+1
+    elif (x=='-')
+        q ans ans-1
 outln ans

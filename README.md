@@ -1,4 +1,4 @@
-<h1 align=center>l2 lang</h1>
+<h1 align=center>D# lang</h1>
 
 ```mermaid
 graph TD;

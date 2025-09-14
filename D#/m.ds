@@ -1,9 +1,0 @@
-def rin s ("")
-in s
-def teg ans 1
-each x s
-    if (x=='+')
-        q ans ans+1
-    elif (x=='-')
-        q ans ans-1
-outln ans
